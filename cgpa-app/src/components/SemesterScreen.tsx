@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Check, ChevronLeft, Plus, Search } from 'lucide-react';
 import type { Course, CourseCatalogItem, CourseStatus, Level, SemesterRecord, UserProfile } from '../types';
 import {
@@ -171,30 +171,34 @@ export function SemesterScreen({ semester, allSemesters, profile, backLabel, onB
         onClose={() => setConfirmDelete(false)}
       />
 
-      <AddCoursesSheet
-        open={adding}
-        onClose={() => setAdding(false)}
-        semester={semester}
-        allSemesters={allSemesters}
-        limit={limit}
-        onAdd={added => {
-          setCourses([...semester.courses, ...added]);
-          setAdding(false);
-        }}
-      />
+      {adding && (
+        <AddCoursesSheet
+          onClose={() => setAdding(false)}
+          semester={semester}
+          allSemesters={allSemesters}
+          limit={limit}
+          onAdd={added => {
+            setCourses([...semester.courses, ...added]);
+            setAdding(false);
+          }}
+          />
+      )}
 
-      <CourseSheet
-        course={editing}
-        onClose={() => setEditing(null)}
-        onSave={c => {
-          setCourses(semester.courses.map(x => (x.id === c.id ? c : x)));
-          setEditing(null);
-        }}
-        onRemove={id => {
-          setCourses(semester.courses.filter(x => x.id !== id));
-          setEditing(null);
-        }}
-      />
+      {editing && (
+        <CourseSheet
+          key={editing.id}
+          course={editing}
+          onClose={() => setEditing(null)}
+          onSave={c => {
+            setCourses(semester.courses.map(x => (x.id === c.id ? c : x)));
+            setEditing(null);
+          }}
+          onRemove={id => {
+            setCourses(semester.courses.filter(x => x.id !== id));
+            setEditing(null);
+          }}
+          />
+      )}
     </div>
   );
 }
@@ -208,15 +212,14 @@ function Stat({ label, value, danger }: { label: string; value: string; danger?:
   );
 }
 
+/** Mounted only while open, so its state starts fresh each time. */
 function AddCoursesSheet({
-  open,
   onClose,
   semester,
   allSemesters,
   limit,
   onAdd,
 }: {
-  open: boolean;
   onClose: () => void;
   semester: SemesterRecord;
   allSemesters: SemesterRecord[];
@@ -230,18 +233,6 @@ function AddCoursesSheet({
   const [title, setTitle] = useState('');
   const [units, setUnits] = useState(2);
   const [status, setStatus] = useState<CourseStatus>('E');
-
-  useEffect(() => {
-    if (open) {
-      setPicked(new Set());
-      setQuery('');
-      setCustom(false);
-      setCode('');
-      setTitle('');
-      setUnits(2);
-      setStatus('E');
-    }
-  }, [open]);
 
   const existingInThisSemester = useMemo(
     () => new Set(semester.courses.map(c => codeKey(c.code))),
@@ -368,7 +359,7 @@ function AddCoursesSheet({
 
   return (
     <Sheet
-      open={open}
+      open
       onClose={onClose}
       title={custom ? 'Add your own course' : 'Add courses'}
       footer={
@@ -503,71 +494,66 @@ function CourseSheet({
   onSave,
   onRemove,
 }: {
-  course: Course | null;
+  course: Course;
   onClose: () => void;
   onSave: (c: Course) => void;
   onRemove: (id: string) => void;
 }) {
-  const [draft, setDraft] = useState<Course | null>(course);
-  useEffect(() => setDraft(course), [course]);
+  const [draft, setDraft] = useState<Course>(course);
 
   return (
     <Sheet
-      open={!!course && !!draft}
+      open
       onClose={onClose}
       title="Edit course"
       footer={
-        draft && (
-          <button
-            disabled={!draft.code.trim()}
-            onClick={() => onSave({ ...draft, code: draft.code.trim(), title: draft.title.trim() || draft.code.trim() })}
-            className={primaryBtn}
-          >
-            Save
-          </button>
-        )
+        <button
+          disabled={!draft.code.trim()}
+          onClick={() => onSave({ ...draft, code: draft.code.trim(), title: draft.title.trim() || draft.code.trim() })}
+          className={primaryBtn}
+        >
+          Save
+        </button>
       }
     >
-      {course && draft && (
-        <div className="space-y-3 pt-1">
-          <label className="block">
-            <span className="text-[13px] text-ink-3">Course code</span>
-            <input
-              className="field mt-1 uppercase"
-              value={draft.code}
-              autoCapitalize="characters"
-              autoComplete="off"
-              onChange={e => setDraft({ ...draft, code: e.target.value.toUpperCase() })}
-            />
-          </label>
-          <label className="block">
-            <span className="text-[13px] text-ink-3">Title</span>
-            <input className="field mt-1" value={draft.title} onChange={e => setDraft({ ...draft, title: e.target.value })} />
-          </label>
-          <div className="flex items-center justify-between pt-1">
-            <span className="text-[15px] font-medium text-ink">Units</span>
-            <Stepper value={draft.units} onChange={u => setDraft({ ...draft, units: u })} min={0} max={6} />
-          </div>
-          <Segmented
-            options={[
-              { value: 'C' as CourseStatus, label: 'Compulsory' },
-              { value: 'E' as CourseStatus, label: 'Elective' },
-            ]}
-            value={draft.status}
-            onChange={s => setDraft({ ...draft, status: s })}
+      <div className="space-y-3 pt-1">
+        <label className="block">
+          <span className="text-[13px] text-ink-3">Course code</span>
+          <input
+            className="field mt-1 uppercase"
+            value={draft.code}
+            autoCapitalize="characters"
+            autoComplete="off"
+            onChange={e => setDraft({ ...draft, code: e.target.value.toUpperCase() })}
           />
-          <div>
-            <p className="mb-1.5 text-[13px] text-ink-3">Grade</p>
-            <GradePicker value={draft.grade} onChange={g => setDraft({ ...draft, grade: draft.grade === g ? undefined : g })} />
-          </div>
-          <button
-            onClick={() => onRemove(course.id)}
-            className="mt-2 h-12 w-full rounded-xl text-[15px] font-medium text-danger active:bg-danger-soft"
-          >
-            Remove from this semester
-          </button>
+        </label>
+        <label className="block">
+          <span className="text-[13px] text-ink-3">Title</span>
+          <input className="field mt-1" value={draft.title} onChange={e => setDraft({ ...draft, title: e.target.value })} />
+        </label>
+        <div className="flex items-center justify-between pt-1">
+          <span className="text-[15px] font-medium text-ink">Units</span>
+          <Stepper value={draft.units} onChange={u => setDraft({ ...draft, units: u })} min={0} max={6} />
         </div>
-      )}
+        <Segmented
+          options={[
+            { value: 'C' as CourseStatus, label: 'Compulsory' },
+            { value: 'E' as CourseStatus, label: 'Elective' },
+          ]}
+          value={draft.status}
+          onChange={s => setDraft({ ...draft, status: s })}
+        />
+        <div>
+          <p className="mb-1.5 text-[13px] text-ink-3">Grade</p>
+          <GradePicker value={draft.grade} onChange={g => setDraft({ ...draft, grade: draft.grade === g ? undefined : g })} />
+        </div>
+        <button
+          onClick={() => onRemove(course.id)}
+          className="mt-2 h-12 w-full rounded-xl text-[15px] font-medium text-danger active:bg-danger-soft"
+        >
+          Remove from this semester
+        </button>
+      </div>
     </Sheet>
   );
 }

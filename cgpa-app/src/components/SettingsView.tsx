@@ -133,8 +133,8 @@ export function SettingsView({
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="flex min-h-[52px] flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2">
-      <span className="text-[15px] text-ink">{label}</span>
+    <div className="flex min-h-[52px] items-center justify-between gap-3 px-4 py-2">
+      <span className="min-w-0 text-[15px] leading-snug text-ink">{label}</span>
       {children}
     </div>
   );

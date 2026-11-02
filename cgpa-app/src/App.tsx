@@ -127,12 +127,13 @@ export function App() {
         />
       )}
 
-      <NewSemesterSheet
-        open={showAddSemester}
-        onClose={() => setShowAddSemester(false)}
-        semesters={semesters}
-        onCreate={handleCreateSemester}
-      />
+      {showAddSemester && (
+        <NewSemesterSheet
+          onClose={() => setShowAddSemester(false)}
+          semesters={semesters}
+          onCreate={handleCreateSemester}
+        />
+      )}
     </div>
   );
 }

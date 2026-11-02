@@ -105,12 +105,11 @@ export function HomeView({ profile, semesters, asOfId, onAsOf, onOpen, onAddSeme
 
         {/* Degree progress */}
         <section className={`${card} flex flex-col p-4`}>
-          <div className="flex items-baseline justify-between gap-2">
-            <h2 className="text-[15px] font-semibold text-ink">Towards graduation</h2>
-            <span className="text-[13px] text-ink-3 tabular-nums">
-              {earned.total} / {TOTAL_REQUIRED}
-            </span>
-          </div>
+          <h2 className="text-[14px] text-ink-2">Towards graduation</h2>
+          <p className="mt-1 text-[28px] leading-tight font-semibold tracking-[-0.02em] text-ink tabular-nums">
+            {earned.total}
+            <span className="text-[15px] font-normal tracking-normal text-ink-3"> / {TOTAL_REQUIRED} units</span>
+          </p>
           <Bar value={earned.total / TOTAL_REQUIRED} className="mt-3" />
           <dl className="mt-auto grid grid-cols-3 gap-2 pt-4 text-[13px]">
             <Figure label="Compulsory" value={`${earned.compulsory}/${TOTAL_COMPULSORY}`} />

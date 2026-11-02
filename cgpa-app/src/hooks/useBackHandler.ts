@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
 
@@ -54,7 +54,9 @@ window.addEventListener('keydown', e => {
 /** While `active`, pressing back calls `onBack` (typically: close this layer). */
 export function useBackHandler(active: boolean, onBack: () => void) {
   const ref = useRef(onBack);
-  ref.current = onBack;
+  useLayoutEffect(() => {
+    ref.current = onBack;
+  });
 
   useEffect(() => {
     if (!active) return;

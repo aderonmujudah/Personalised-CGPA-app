@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { Level, SemesterRecord, SemesterType } from '../types';
 import { getCompulsoryCoursesForSemester } from '../data/curriculumData';
 import { nextSession, semesterLabel, sortSemesters } from '../utils/cgpaEngine';
@@ -6,42 +6,33 @@ import { Segmented, Sheet } from './ui';
 
 const LEVELS: Level[] = ['100L', '200L', '300L', '400L', '500L'];
 
+/** Suggest whatever comes after the latest semester. */
+function suggestNext(semesters: SemesterRecord[]): { level: Level; type: SemesterType; session: string } {
+  const last = sortSemesters(semesters).at(-1);
+  if (!last) {
+    const y = new Date().getFullYear();
+    return { level: '100L', type: 'First Semester', session: `${y}/${y + 1}` };
+  }
+  if (last.semester === 'First Semester') return { level: last.level, type: 'Second Semester', session: last.session };
+  const i = LEVELS.indexOf(last.level);
+  return { level: LEVELS[Math.min(i + 1, LEVELS.length - 1)], type: 'First Semester', session: nextSession(last.session) };
+}
+
+/** Mounted only while open, so the suggestion is recomputed each time. */
 export function NewSemesterSheet({
-  open,
   onClose,
   semesters,
   onCreate,
 }: {
-  open: boolean;
   onClose: () => void;
   semesters: SemesterRecord[];
   onCreate: (s: SemesterRecord) => void;
 }) {
-  const [level, setLevel] = useState<Level>('100L');
-  const [type, setType] = useState<SemesterType>('First Semester');
-  const [session, setSession] = useState('');
+  const [initial] = useState(() => suggestNext(semesters));
+  const [level, setLevel] = useState<Level>(initial.level);
+  const [type, setType] = useState<SemesterType>(initial.type);
+  const [session, setSession] = useState(initial.session);
   const [planned, setPlanned] = useState(true);
-
-  // Suggest whatever comes after the latest semester
-  useEffect(() => {
-    if (!open) return;
-    const last = sortSemesters(semesters).at(-1);
-    if (!last) {
-      setLevel('100L');
-      setType('First Semester');
-      setSession(`${new Date().getFullYear()}/${new Date().getFullYear() + 1}`);
-    } else if (last.semester === 'First Semester') {
-      setLevel(last.level);
-      setType('Second Semester');
-      setSession(last.session);
-    } else {
-      const i = LEVELS.indexOf(last.level);
-      setLevel(LEVELS[Math.min(i + 1, LEVELS.length - 1)]);
-      setType('First Semester');
-      setSession(nextSession(last.session));
-    }
-    setPlanned(true);
-  }, [open, semesters]);
 
   const trimmed = session.trim();
   const validSession = /^\d{4}\/\d{4}$/.test(trimmed) && +trimmed.slice(5) === +trimmed.slice(0, 4) + 1;
@@ -51,7 +42,7 @@ export function NewSemesterSheet({
 
   return (
     <Sheet
-      open={open}
+      open
       onClose={onClose}
       title="New semester"
       footer={

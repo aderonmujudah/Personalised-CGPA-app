@@ -109,7 +109,9 @@ button:disabled {
   outline-offset: 2px;
 }
 
-/* 16px stops mobile browsers from zooming into inputs on focus */
+/* In the components layer so Tailwind utilities (pl-9, mt-1…) can override it.
+   16px stops mobile browsers from zooming into inputs on focus. */
+@layer components {
 .field {
   width: 100%;
   height: 46px;
@@ -129,6 +131,12 @@ button:disabled {
 
 .field::placeholder {
   color: var(--ink-3);
+}
+
+.field::-webkit-search-decoration,
+.field::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
 }
 
 .scroller {
