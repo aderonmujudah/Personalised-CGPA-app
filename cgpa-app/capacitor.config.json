@@ -1,0 +1,7 @@
+{
+  "appId": "com.judah.cgpapro",
+  "appName": "CGPA Pro",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
+

@@ -1,0 +1,55 @@
+================================================================================
+REMAINING TASKS & IMPLEMENTATION STATUS
+Personalised CGPA App (Nigerian 5.0 System - UNILAG Systems Engineering)
+================================================================================
+
+[x] 1. APP INTEGRATION & BUILD
+    - Reconnected App.tsx to the redesigned clean UI components:
+      * HomeView (Hero CGPA, interactive Rollback Timeline scrubber, graduation progress, semester list)
+      * SemesterScreen (clean course rows, inline grade selector, course editor sheet)
+      * PlanView (target CGPA simulator, degree target feasibility analysis, units by level)
+      * SettingsView (profile customization, theme switch, export/import JSON backup, transcript reset)
+      * TabBar (Home, Plan, Settings - no standalone carryover tab)
+      * NewSemesterSheet (create semester with compulsory courses pre-loaded)
+      * PhoneFrame (desktop mobile preview shell)
+      * useTheme (light/dark theme toggle: sky blue & white / dark blue-grey)
+    - Production build passing cleanly without TypeScript or bundler errors.
+
+[x] 2. ELECTIVE SELECTION & UNPICKED ELECTIVES ROLLOVER (NEW USER SPECIFICATION)
+    - Auto-picking stopped: Future semesters only preload compulsory courses.
+    - Electives are chosen by the user and are NOT restricted to a single specialization track.
+    - Unpicked Electives Rollover:
+      * In any semester (e.g. 500L First Semester), the elective picker displays:
+        a) Current level electives (all specializations enabled)
+        b) Unpicked electives from earlier corresponding semesters (e.g. 400L First Semester electives
+           such as SSG 431, SSG 433, SSG 439) that were not registered or passed earlier.
+    - Max 24 Units limit strictly enforced:
+      * Adding a course that would push the semester total beyond 24 units is prevented with a clear alert.
+      * Live unit tally displayed (e.g. "18 of 24 units").
+
+[x] 3. DISCREET INLINE CARRYOVER BEHAVIOR
+    - No shameful standalone carryover tab.
+    - If a course receives grade 'F' in Session Y Semester S (like CEG 211 in 2023/2024 First Semester),
+      it automatically appears in the course list of the next session's corresponding semester
+      (2024/2025 First Semester) with a clean "Carryover from 2023/2024" tag.
+    - Once retaken and passed (>= 'E'), it automatically stops recurring in subsequent sessions.
+
+[x] 4. DEGREE GRADUATION REQUIREMENTS TRACKING
+    - Tracks 172 Total Units required to graduate (from Section 8a of Curriculum PDF):
+      * 154 Compulsory Units
+      * 18 Elective Units
+    - Real-time progress bar and level-by-level breakdown (100L - 500L).
+    - Avoids double-counting retakes towards earned degree credits.
+
+[x] 5. NATIVE-FEEL UI DESIGN (SKY BLUE & WHITE + DARK MODE)
+    - Light Mode: Crisp white surfaces, soft pale-sky background (#eef4fa), and vibrant sky-blue accent (#0b8ce0).
+    - Dark Mode: Deep blue-grey background (#0b1016), dark slate cards, and luminous sky-blue accent (#46b3f2).
+    - No generic AI gradients or emojis. Native mobile typography and tactile controls.
+    - Interactive Rollback timeline lets you scrub back to any past semester without deleting future plans.
+
+[x] 6. ANDROID APK EXPORT (COMPLETED)
+    - Android compilation completed successfully with Gradle.
+    - Generated native APK:
+      * Root shortcut: `C:\Users\judah\Downloads\Personalised CGPA app\CGPA-Planner-Judah.apk` (4.2 MB)
+      * Build output: `cgpa-app\android\app\build\outputs\apk\debug\app-debug.apk`
+    - Ready to install directly on your Android phone!

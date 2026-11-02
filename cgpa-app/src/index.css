@@ -1,0 +1,180 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Neutral greys carry the layout; blue is only used for things you can act on
+ * or that carry meaning (selection, progress). Keeping the greys untinted is
+ * what stops the whole screen from reading as one blue wash.
+ */
+:root {
+  --bg: #f3f3f1;
+  --surface: #ffffff;
+  --surface-2: #f6f6f4;
+  --track: #e9e9e6;
+  --seg: #ffffff;
+  --line: #e4e4e0;
+  --ink: #16181b;
+  --ink-2: #53575d;
+  --ink-3: #868a90;
+  --accent: #1b6dcc;
+  --accent-soft: #e7eff9;
+  --on-accent: #ffffff;
+  --danger: #c4413a;
+  --danger-soft: #fbecea;
+
+  /* Capacitor injects --safe-area-inset-* on Android; browsers use env(). */
+  --sat: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --sab: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --sal: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+  --sar: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #0f1012;
+  --surface: #17181b;
+  --surface-2: #1e2023;
+  --track: #24262a;
+  --seg: #36393e;
+  --line: #27292d;
+  --ink: #ebebe8;
+  --ink-2: #a4a7ac;
+  --ink-3: #6c7076;
+  --accent: #62a4ea;
+  --accent-soft: rgba(98, 164, 234, 0.13);
+  --on-accent: #0a1522;
+  --danger: #ec6a61;
+  --danger-soft: rgba(236, 106, 97, 0.12);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-track: var(--track);
+  --color-seg: var(--seg);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", system-ui, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  font-feature-settings: "tnum" 1;
+  overscroll-behavior: none;
+}
+
+button,
+label,
+a {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* 16px stops mobile browsers from zooming into inputs on focus */
+.field {
+  width: 100%;
+  height: 46px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.field:focus {
+  border-color: var(--accent);
+}
+
+.field::placeholder {
+  color: var(--ink-3);
+}
+
+.scroller {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.pt-safe { padding-top: max(var(--sat), 16px); }
+.pb-safe { padding-bottom: max(var(--sab), 10px); }
+.px-safe { padding-left: var(--sal); padding-right: var(--sar); }
+
+@keyframes sheet-in {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes push-in {
+  from { transform: translateX(32px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes pop-in {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.anim-sheet { animation: sheet-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.anim-fade { animation: fade-in 0.18s ease; }
+.anim-push { animation: push-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.anim-pop { animation: pop-in 0.18s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+@media (min-width: 640px) {
+  .anim-sheet { animation: pop-in 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-sheet, .anim-fade, .anim-push, .anim-pop { animation: none; }
+}
